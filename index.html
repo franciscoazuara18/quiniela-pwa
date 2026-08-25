@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quiniela Liga MX</title>
+<meta name="theme-color" content="#1F4E78">
+<meta name="description" content="Captura tu marcador de la jornada y consulta la tabla general de la quiniela.">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./icon-192.png">
+<link rel="apple-touch-icon" href="./icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Quiniela">
+<link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>⚽ Quiniela Liga MX</h1>
+    <p>Manda tu marcador y revisa la tabla general</p>
+  </header>
+
+  <nav class="tabs">
+    <button id="tab-capturar" class="activo">Capturar</button>
+    <button id="tab-tabla">Tabla general</button>
+  </nav>
+
+  <main>
+    <section id="vista-capturar" class="vista activa">
+      <div id="contenido-capturar"><p class="centro">Cargando partidos…</p></div>
+      <div id="registrados"></div>
+
+      <form id="form-quiniela" class="tarjeta" style="display:none">
+        <label for="nombre">Tu nombre</label>
+        <input type="text" id="nombre" name="nombre" placeholder="Escríbelo igual que siempre" required>
+        <div id="mensaje-envio"></div>
+        <button type="submit" id="btn-enviar" class="principal">Enviar mi quiniela</button>
+      </form>
+    </section>
+
+    <section id="vista-tabla" class="vista">
+      <div id="contenido-tabla"><p class="centro">Cargando tabla…</p></div>
+    </section>
+  </main>
+</div>
+
+<script src="./app.js"></script>
+</body>
+</html>
