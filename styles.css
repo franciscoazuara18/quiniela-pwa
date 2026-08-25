@@ -128,13 +128,25 @@ input[type="text"] {
 
 .partido .equipo {
   flex: 1;
-  font-size: 0.88rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.72rem;
   font-weight: 600;
-  line-height: 1.25;
+  line-height: 1.2;
+  text-align: center;
 }
 
-.partido .equipo.local { text-align: right; }
-.partido .equipo.visita { text-align: left; }
+.partido .equipo .nombre-equipo {
+  display: block;
+}
+
+.escudo {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+}
 
 .marcador {
   display: flex;
@@ -195,13 +207,86 @@ button.principal:disabled { background: #aaa; }
   font-weight: 700;
   background: var(--dorado);
   color: #4a3800;
+}
+
+.jornada-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
   margin-bottom: 10px;
 }
+
+.nav-flecha {
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--gris-claro);
+  color: var(--azul);
+  font-size: 1.25rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.nav-flecha:active { background: #dbe6f0; }
 
 .lista-nombres {
   font-size: 0.88rem;
   line-height: 1.6;
   color: #444;
+}
+
+.registrados-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.registrados-titulo {
+  font-weight: 700;
+  color: var(--azul);
+  font-size: 0.92rem;
+}
+
+.chip-conteo {
+  background: var(--azul);
+  color: #fff;
+  min-width: 22px;
+  text-align: center;
+}
+
+.chips-nombres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip-nombre {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--gris-claro);
+  color: var(--azul);
+  border-radius: 999px;
+  padding: 5px 10px 5px 6px;
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.chip-nombre-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  border-radius: 50%;
+  background: var(--azul);
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 800;
 }
 
 table.tabla-general {
