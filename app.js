@@ -172,26 +172,15 @@ function renderPartidos(datos) {
   });
 }
 
-// Convierte "CRUZ AZUL" -> "cruz_azul", "SAN LUIS" -> "san_luis", etc. -- así
-// sabemos qué archivo de logo buscar en la carpeta logos/ sin tener que
-// mantener una lista aparte. Ver COMO_USAR_PWA.md para los 18 nombres exactos.
-var ACENTOS_EQUIPO = { "a": "áà", "e": "éè", "i": "íì", "o": "óò", "u": "úùü", "n": "ñ" };
-function slugEquipo(nombre) {
-  var texto = String(nombre || "").toLowerCase();
-  Object.keys(ACENTOS_EQUIPO).forEach(function (sinAcento) {
-    ACENTOS_EQUIPO[sinAcento].split("").forEach(function (conAcento) {
-      texto = texto.split(conAcento).join(sinAcento);
-    });
-  });
-  return texto.replace(/[^a-z0-9]+/g, "_").replace(/^_+|_+$/g, "");
-}
-
-// Si el archivo logos/<equipo>.png no existe, el onerror lo oculta solo --
-// el partido se sigue viendo bien nada más con el nombre en texto.
+// Busca el logo en logos/<NOMBRE-TAL-CUAL-EN-PARTIDOS>.png -- por ejemplo
+// "CRUZ AZUL" busca logos/CRUZ AZUL.png. Así el archivo se llama exactamente
+// igual que el equipo en tu hoja PARTIDOS, sin tener que renombrar nada.
+// Si el archivo no existe, el onerror lo oculta solo -- el partido se sigue
+// viendo bien nada más con el nombre en texto.
 function escudoHtml(nombreEquipo) {
-  const slug = slugEquipo(nombreEquipo);
-  if (!slug) return "";
-  return '<img class="escudo" src="./logos/' + slug + '.png" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
+  const nombre = String(nombreEquipo || "").trim();
+  if (!nombre) return "";
+  return '<img class="escudo" src="./logos/' + encodeURIComponent(nombre) + '.png" alt="" loading="lazy" onerror="this.style.display=\'none\'">';
 }
 
 function stepperHtml(i, lado) {
