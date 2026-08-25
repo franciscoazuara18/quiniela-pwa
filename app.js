@@ -5,7 +5,7 @@
  * URL que te dio Apps Script al implementar WebApp.gs como "Aplicación web"
  * (termina en /exec). Ver COMO_USAR_PWA.md para el paso a paso.
  */
-const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzUq1CoE4digJNBvYb2ZHmRZE8VkiO7avUGb9mZ6qCumaOftwj_7_aWau5De4MbPTfLMQ/exec";
+const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbxIsPOivqqh4bKGsGFkkFrLvU1NpEEk71Xv0n2e6UgV6luGfJWaUU_LWFfinhMyuuG0Aw/exec";
 
 const estado = {
   jornada: null,
