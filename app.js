@@ -283,7 +283,6 @@ function renderTabla(datos) {
   }).join("");
 
   cont.innerHTML =
-    '<p class="centro" style="padding:0 0 10px;">Puntos de la jornada ' + datos.jornada + ' (la actual). El acumulado de todas las jornadas sigue disponible en el Sheet, pestaña TABLA_GENERAL.</p>' +
     '<div class="tarjeta tabla-scroll">' +
     '<table class="tabla-general">' +
     "<thead><tr><th>Nombre</th><th>Jornada " + datos.jornada + "</th></tr></thead>" +
