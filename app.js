@@ -267,10 +267,7 @@ async function cargarTabla() {
 function renderTabla(datos) {
   const miNombre = (localStorage.getItem("quiniela_nombre") || "").trim().toLowerCase();
   const cont = document.getElementById("contenido-tabla");
-  const encabezados = datos.jornadas.map(function (j) { return "<th>J" + j + "</th>"; }).join("");
   const filas = datos.filas.map(function (fila, idx) {
-    const celdas = fila.puntos.map(function (v) { return "<td>" + (v === null ? "—" : v) + "</td>"; }).join("");
-    const claseTotal = fila.total === null ? "" : ' class="total"';
     const esYo = fila.nombre.trim().toLowerCase() === miNombre;
     const clasesFila = [];
     if (idx === 0) clasesFila.push("puesto-1");
@@ -280,17 +277,17 @@ function renderTabla(datos) {
     return (
       "<tr" + (clasesFila.length ? ' class="' + clasesFila.join(" ") + '"' : "") + ">" +
       "<td>" + escaparHtml(fila.nombre) + (esYo ? " (tú)" : "") + "</td>" +
-      celdas +
-      "<td" + claseTotal + ">" + (fila.total === null ? "—" : fila.total) + "</td>" +
+      '<td class="total">' + fila.total + "</td>" +
       "</tr>"
     );
   }).join("");
 
   cont.innerHTML =
+    '<p class="centro" style="padding:0 0 10px;">Puntos de la jornada ' + datos.jornada + ' (la actual). El acumulado de todas las jornadas sigue disponible en el Sheet, pestaña TABLA_GENERAL.</p>' +
     '<div class="tarjeta tabla-scroll">' +
     '<table class="tabla-general">' +
-    "<thead><tr><th>Nombre</th>" + encabezados + "<th>Total</th></tr></thead>" +
-    "<tbody>" + filas + "</tbody>" +
+    "<thead><tr><th>Nombre</th><th>Jornada " + datos.jornada + "</th></tr></thead>" +
+    "<tbody>" + (filas || '<tr><td colspan="2" class="centro">Todavía nadie se ha registrado.</td></tr>') + "</tbody>" +
     "</table>" +
     "</div>";
 }
