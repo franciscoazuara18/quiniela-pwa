@@ -98,7 +98,22 @@ async function cargarJornada(jornada) {
     estado.jornada = datos.jornada;
     estado.partidos = datos.partidos;
     estado.marcadores = datos.partidos.map(function () { return { local: 0, visita: 0 }; });
-    renderPartidos(datos);
+
+    // Si esta persona ya mandó su quiniela para esta jornada, en vez del
+    // formulario vacío se le muestra lo que ya registró (de solo lectura) --
+    // así puede consultarlo sin tener que pedírtelo a ti.
+    let miQuiniela = null;
+    const nombreGuardado = (localStorage.getItem("quiniela_nombre") || "").trim();
+    if (!datos.cerrada && nombreGuardado) {
+      try {
+        const mia = await apiGet("miquiniela", { nombre: nombreGuardado, jornada: datos.jornada });
+        if (mia.ok && mia.registrada) miQuiniela = mia.marcadores;
+      } catch (err) {
+        // si falla esta consulta extra, no pasa nada -- se muestra el formulario normal
+      }
+    }
+
+    renderPartidos(datos, miQuiniela);
     cargarRegistros(datos.jornada);
   } catch (err) {
     cont.innerHTML = '<div class="aviso error">Sin conexión con el Sheet ahorita.<br><small>' + escaparHtml(String(err.message || err)) + "</small></div>";
@@ -126,50 +141,60 @@ function cambiarJornadaMostrada(delta) {
   cargarJornada(nueva);
 }
 
-function renderPartidos(datos) {
+// miQuiniela: null si todavía puede capturar, o un arreglo [{local,visita}, ...]
+// (uno por partido, en el mismo orden que datos.partidos) si ya la registró
+// -- en ese caso se muestra de solo lectura, ya no editable.
+function renderPartidos(datos, miQuiniela) {
   const cont = document.getElementById("contenido-capturar");
+  const yaRegistrada = !!miQuiniela;
   const bloques = datos.partidos.map(function (p, i) {
+    const marcadorHtml = yaRegistrada
+      ? '<div class="marcador marcador-fijo">' +
+        '<span class="valor-fijo">' + escaparHtml(miQuiniela[i].local) + "</span>" +
+        '<span class="vs">-</span>' +
+        '<span class="valor-fijo">' + escaparHtml(miQuiniela[i].visita) + "</span>" +
+        "</div>"
+      : '<div class="marcador">' + stepperHtml(i, "local") + '<span class="vs">-</span>' + stepperHtml(i, "visita") + "</div>";
     return (
       '<div class="partido" data-i="' + i + '">' +
       '<div class="equipo local">' + escudoHtml(p.local) + '<span class="nombre-equipo">' + escaparHtml(p.local) + "</span></div>" +
-      '<div class="marcador">' +
-      stepperHtml(i, "local") +
-      '<span class="vs">-</span>' +
-      stepperHtml(i, "visita") +
-      "</div>" +
+      marcadorHtml +
       '<div class="equipo visita">' + escudoHtml(p.visita) + '<span class="nombre-equipo">' + escaparHtml(p.visita) + "</span></div>" +
       "</div>"
     );
   }).join("");
 
   const cerrada = datos.cerrada;
+  let aviso = "";
+  if (cerrada) {
+    aviso = '<div class="aviso info">Esta jornada ya cerró (ya se capturaron los resultados reales). Aquí abajo puedes ver la tabla general.</div>';
+  } else if (yaRegistrada) {
+    aviso = '<div class="aviso exito">Ya enviaste tu quiniela para esta jornada ⚽ Aquí abajo está lo que registraste — ya no se puede cambiar. Si te equivocaste, pídele al admin que lo corrija directo en el Sheet.</div>';
+  }
+
   cont.innerHTML =
     '<div class="tarjeta">' +
     navJornadaHtml(datos.jornada) +
-    (cerrada
-      ? '<div class="aviso info">Esta jornada ya cerró (ya se capturaron los resultados reales). Aquí abajo puedes ver la tabla general.</div>'
-      : "") +
+    aviso +
     '<div id="lista-partidos">' + bloques + "</div>" +
     "</div>";
 
   activarNavJornada();
 
-  if (!cerrada) {
-    document.getElementById("form-quiniela").style.display = "";
-  } else {
-    document.getElementById("form-quiniela").style.display = "none";
-  }
+  document.getElementById("form-quiniela").style.display = (cerrada || yaRegistrada) ? "none" : "";
 
-  cont.querySelectorAll(".stepper button").forEach(function (btn) {
-    btn.addEventListener("click", function () {
-      const i = Number(btn.closest(".partido").dataset.i);
-      const lado = btn.dataset.lado;
-      const delta = Number(btn.dataset.delta);
-      const nuevo = Math.max(0, Math.min(15, estado.marcadores[i][lado] + delta));
-      estado.marcadores[i][lado] = nuevo;
-      btn.closest(".stepper").querySelector(".valor").textContent = nuevo;
+  if (!cerrada && !yaRegistrada) {
+    cont.querySelectorAll(".stepper button").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const i = Number(btn.closest(".partido").dataset.i);
+        const lado = btn.dataset.lado;
+        const delta = Number(btn.dataset.delta);
+        const nuevo = Math.max(0, Math.min(15, estado.marcadores[i][lado] + delta));
+        estado.marcadores[i][lado] = nuevo;
+        btn.closest(".stepper").querySelector(".valor").textContent = nuevo;
+      });
     });
-  });
+  }
 }
 
 // Busca el logo en logos/<NOMBRE-TAL-CUAL-EN-PARTIDOS>.png -- por ejemplo
@@ -240,6 +265,9 @@ async function enviarQuiniela(ev) {
     });
     if (resp.ok) {
       msg.innerHTML = '<div class="aviso exito">' + escaparHtml(resp.mensaje) + "</div>";
+      // Muestra de inmediato lo que se acaba de mandar, de solo lectura --
+      // así el participante ve confirmado exactamente lo que quedó guardado.
+      renderPartidos({ jornada: estado.jornada, cerrada: false, partidos: estado.partidos }, estado.marcadores);
       cargarRegistros(estado.jornada);
     } else {
       msg.innerHTML = '<div class="aviso error">' + escaparHtml(resp.error) + "</div>";

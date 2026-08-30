@@ -184,6 +184,21 @@ input[type="text"] {
   font-weight: 700;
 }
 
+.marcador-fijo {
+  background: var(--gris-claro);
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+
+.valor-fijo {
+  width: 24px;
+  display: inline-block;
+  text-align: center;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--azul);
+}
+
 button.principal {
   width: 100%;
   padding: 14px;
